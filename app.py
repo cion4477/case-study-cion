@@ -39,7 +39,14 @@ def encode_inputs(df, country, continent):
     df_temp['country'] = country
     df_temp['continent'] = continent
     df_temp = pd.get_dummies(df_temp, columns=['country', 'continent'], drop_first=True)
-    return df_temp.reindex(columns=model.feature_names_in_, fill_value=0)
+    # Get all columns in training set manually
+expected_cols = pd.read_csv("beer-servings.csv")
+expected_cols['continent'].fillna(expected_cols['continent'].mode()[0], inplace=True)
+expected_cols = pd.get_dummies(expected_cols, columns=['country', 'continent'], drop_first=True)
+input_columns = expected_cols.drop(columns=['total_litres_of_pure_alcohol']).columns
+
+return df_temp.reindex(columns=input_columns, fill_value=0)
+
 
 if st.button("Predict"):
     input_df = df.iloc[[0]].copy()
