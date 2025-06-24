@@ -38,9 +38,22 @@ def encode_inputs(df, country, continent):
     df_temp = df.copy()
     df_temp['country'] = country
     df_temp['continent'] = continent
+# 🔁 REPLACE THIS FUNCTION FROM LINE 41:
+
+def encode_inputs(df, country, continent):
+    df_temp = df.copy()
+    df_temp['country'] = country
+    df_temp['continent'] = continent
     df_temp = pd.get_dummies(df_temp, columns=['country', 'continent'], drop_first=True)
-    # Get all columns in training set manually
-expected_cols = pd.read_csv("beer-servings.csv")
+
+    # Manually get training input column names
+    expected_cols = pd.read_csv("beer-servings.csv")
+    expected_cols['continent'].fillna(expected_cols['continent'].mode()[0], inplace=True)
+    expected_cols = pd.get_dummies(expected_cols, columns=['country', 'continent'], drop_first=True)
+    input_columns = expected_cols.drop(columns=['total_litres_of_pure_alcohol']).columns
+
+    return df_temp.reindex(columns=input_columns, fill_value=0)
+
 expected_cols['continent'].fillna(expected_cols['continent'].mode()[0], inplace=True)
 expected_cols = pd.get_dummies(expected_cols, columns=['country', 'continent'], drop_first=True)
 input_columns = expected_cols.drop(columns=['total_litres_of_pure_alcohol']).columns
